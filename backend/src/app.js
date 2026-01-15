@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const dataRoutes = require('./routes/dataRoutes');
 const analysisRoutes = require('./routes/analysisRoutes');
+const countryRoutes = require('./routes/countryRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +28,8 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/data', dataRoutes);
 app.use('/api/analysis', analysisRoutes);
+app.use('/api/countries', countryRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -40,12 +44,22 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Macro Market Analyzer API',
-    version: '1.0.0',
+    version: '2.1.0',
     endpoints: {
       data: '/api/data',
       analysis: '/api/analysis',
+      countries: '/api/countries',
+      chat: '/api/chat',
       health: '/health'
-    }
+    },
+    features: [
+      'Multi-country comparison (35+ countries)',
+      'Global inflation tracking',
+      'Stock market indices from major exchanges',
+      'Currency exchange rates',
+      'Regional economic analysis',
+      'AI-powered economic insights chatbot'
+    ]
   });
 });
 

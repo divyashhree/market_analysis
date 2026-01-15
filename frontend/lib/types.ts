@@ -2,6 +2,7 @@
 export interface DataPoint {
   date: string;
   value: number;
+  [key: string]: string | number;
 }
 
 export interface Dataset {
@@ -103,3 +104,107 @@ export interface Distribution {
   lowInflation: number[];
   bins: number[];
 }
+
+// ============ MULTI-COUNTRY TYPES ============
+
+export interface Currency {
+  code: string;
+  name: string;
+  symbol: string;
+}
+
+export interface StockIndex {
+  name: string;
+  yahooSymbol?: string;
+  description: string;
+}
+
+export interface Country {
+  code: string;
+  name: string;
+  flag: string;
+  region: string;
+  currency: Currency;
+  stockIndex: StockIndex;
+  gdpRank: number;
+}
+
+export interface CountryDataPoint {
+  date: string;
+  value: number;
+  country: string;
+  countryName: string;
+}
+
+export interface InflationDataPoint extends CountryDataPoint {
+  indicator: string;
+}
+
+export interface StockDataPoint extends CountryDataPoint {
+  indexName: string;
+}
+
+export interface CurrencyDataPoint extends CountryDataPoint {
+  pair: string;
+}
+
+export interface CountryData {
+  country: Country;
+  data: {
+    cpi: InflationDataPoint[];
+    inflation: InflationDataPoint[];
+    gdpGrowth: CountryDataPoint[];
+    stockIndex: StockDataPoint[];
+    exchangeRate: CurrencyDataPoint[];
+  };
+  meta: {
+    lastUpdated: string;
+    sources: string[];
+  };
+}
+
+export interface GlobalInflationEntry {
+  code: string;
+  name: string;
+  flag: string;
+  region: string;
+  latestInflation: number | null;
+  latestYear: string | null;
+  historicalData: InflationDataPoint[];
+}
+
+export interface GlobalStockEntry {
+  code: string;
+  name: string;
+  flag: string;
+  region: string;
+  indexName: string;
+  latestValue: number | null;
+  ytdReturn: number | null;
+  oneYearReturn: number | null;
+  historicalData: StockDataPoint[];
+}
+
+export interface GlobalCurrencyEntry {
+  code: string;
+  name: string;
+  flag: string;
+  currency: Currency;
+  latestRate: number | null;
+  yearChange: number | null;
+  historicalData: CurrencyDataPoint[];
+}
+
+export interface CountryComparisonData {
+  [countryCode: string]: CountryData | { error: string };
+}
+
+export interface RegionData {
+  regions: string[];
+  countriesByRegion: {
+    [region: string]: Country[];
+  };
+}
+
+export type ComparisonDataType = 'all' | 'inflation' | 'cpi' | 'stock' | 'fx' | 'gdp';
+

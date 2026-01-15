@@ -1,6 +1,6 @@
-# Macro Market Analyzer
+# 🌍 Global Market Analyzer
 
-A comprehensive full-stack web application for analyzing relationships between economic indicators and market performance in India. This educational research tool visualizes and analyzes correlations between Consumer Price Index (CPI), USD-INR exchange rates, and the NIFTY 50 stock market index.
+A comprehensive full-stack web application for analyzing and comparing economic indicators across **30+ countries worldwide**. This educational research tool visualizes and compares inflation rates, stock market indices, GDP growth, and currency exchange rates using official data from the World Bank and major financial exchanges.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
@@ -10,17 +10,47 @@ A comprehensive full-stack web application for analyzing relationships between e
 ## 🎯 Project Purpose
 
 This tool is designed for **educational and research purposes only** to help understand:
-- Relationships between inflation (CPI) and market performance
-- Impact of currency exchange rates on stock market indices
-- Historical patterns and correlations in economic data
-- Statistical analysis techniques for time-series data
+- 🌍 Compare economic indicators across 30+ countries
+- 📊 Relationships between inflation, stock markets, and currencies globally
+- 📈 How different economies respond to global events
+- 🔗 Correlations between major stock indices worldwide
+- 📉 Currency strength and exchange rate trends
 
 **⚠️ IMPORTANT DISCLAIMER:** This tool is NOT intended for trading, investment advice, or financial decisions. Past trends do not predict future performance.
 
+## 🌐 Supported Countries (30+)
+
+### North America
+🇺🇸 United States (S&P 500) • 🇨🇦 Canada (TSX) • 🇲🇽 Mexico (IPC)
+
+### Europe
+🇬🇧 United Kingdom (FTSE 100) • 🇩🇪 Germany (DAX) • 🇫🇷 France (CAC 40) • 🇮🇹 Italy (FTSE MIB) • 🇪🇸 Spain (IBEX 35) • 🇳🇱 Netherlands (AEX) • 🇨🇭 Switzerland (SMI) • 🇸🇪 Sweden (OMX 30) • 🇵🇱 Poland (WIG20) • 🇷🇺 Russia (MOEX)
+
+### Asia-Pacific
+🇯🇵 Japan (Nikkei 225) • 🇨🇳 China (Shanghai) • 🇮🇳 India (NIFTY 50) • 🇰🇷 South Korea (KOSPI) • 🇦🇺 Australia (ASX 200) • 🇸🇬 Singapore (STI) • 🇭🇰 Hong Kong (Hang Seng) • 🇹🇼 Taiwan (TAIEX) • 🇮🇩 Indonesia (IDX) • 🇹🇭 Thailand (SET) • 🇲🇾 Malaysia (KLCI) • 🇵🇭 Philippines (PSEi) • 🇻🇳 Vietnam (VN-Index) • 🇳🇿 New Zealand (NZX 50)
+
+### Middle East
+🇸🇦 Saudi Arabia (Tadawul) • 🇦🇪 UAE (DFM) • 🇮🇱 Israel (TA-35) • 🇹🇷 Turkey (BIST 100)
+
+### South America
+🇧🇷 Brazil (Bovespa) • 🇦🇷 Argentina (MERVAL) • 🇨🇱 Chile (IPSA) • 🇨🇴 Colombia (COLCAP)
+
+### Africa
+🇿🇦 South Africa (JSE) • 🇳🇬 Nigeria (NSE) • 🇪🇬 Egypt (EGX 30)
+
 ## ✨ Features
+
+### 🌍 NEW: Global Comparison
+- **Multi-Country Charts** - Compare up to 10 countries on the same chart
+- **Global Inflation Rankings** - See inflation rates across all countries
+- **Stock Market Performance** - Compare YTD and 1-year returns
+- **Currency Strength** - Track currency changes vs USD
+- **Regional Analysis** - Compare economies by region
+- **Country Detail Pages** - Deep dive into individual country data
 
 ### 📊 Data Visualization
 - **Interactive Line Charts** - Individual charts for CPI, USD-INR, and NIFTY 50
+- **Multi-Country Overlay Charts** - Compare multiple countries on one chart
 - **Dual-Axis Overlay Charts** - Compare any two variables on the same chart
 - **Correlation Scatter Plots** - Visualize relationships between variables
 - **Correlation Heatmap** - 3x3 matrix showing all correlations
@@ -70,11 +100,38 @@ This tool is designed for **educational and research purposes only** to help und
 - **Caching:** node-cache
 - **Environment:** dotenv
 
-### Data Sources
-- **Yahoo Finance** - NIFTY 50 and USD-INR data (no API key required)
-- **World Bank API** - CPI data for India (no API key required)
+### Data Sources (All Free, No API Keys Required!)
+- **World Bank API** - Inflation, CPI, GDP data for 30+ countries
+- **Yahoo Finance** - Stock indices and exchange rates for all major markets
 - **Alpha Vantage** - Backup source (free tier: 500 calls/day)
 - **CSV Fallback** - Local CSV files for offline operation
+
+## 🔌 API Endpoints
+
+### Country Data (NEW!)
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/countries` | List all 30+ supported countries |
+| `GET /api/countries/regions` | Get countries grouped by region |
+| `GET /api/countries/top-economies` | Get top economies by GDP |
+| `GET /api/countries/global/inflation` | Global inflation rankings |
+| `GET /api/countries/global/stocks` | Global stock market performance |
+| `GET /api/countries/global/currencies` | Currency strength comparison |
+| `GET /api/countries/compare?countries=US,GB,DE` | Compare multiple countries |
+| `GET /api/countries/:code` | Get comprehensive data for a country |
+| `GET /api/countries/:code/inflation` | Get inflation data for a country |
+| `GET /api/countries/:code/stock` | Get stock index data |
+| `GET /api/countries/:code/currency` | Get exchange rate data |
+
+### India-Specific Data
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/data/all` | All India data (CPI, USD-INR, NIFTY) |
+| `GET /api/data/cpi` | CPI data only |
+| `GET /api/data/usdinr` | USD-INR exchange rate |
+| `GET /api/data/nifty` | NIFTY 50 index |
+| `GET /api/analysis/correlations` | Correlation matrix |
+| `GET /api/analysis/insights` | Auto-generated insights |
 
 ## 📁 Project Structure
 
@@ -83,7 +140,9 @@ macro-market-analyzer/
 ├── frontend/
 │   ├── app/
 │   │   ├── page.tsx                 # Landing page
-│   │   ├── dashboard/page.tsx       # Main dashboard
+│   │   ├── global/page.tsx          # 🆕 Global comparison
+│   │   ├── country/[code]/page.tsx  # 🆕 Country details
+│   │   ├── dashboard/page.tsx       # India dashboard
 │   │   ├── analysis/page.tsx        # Correlation analysis
 │   │   ├── insights/page.tsx        # Auto-generated insights
 │   │   ├── about/page.tsx           # Methodology & info
@@ -92,10 +151,14 @@ macro-market-analyzer/
 │   ├── components/
 │   │   ├── charts/                  # Recharts components
 │   │   │   ├── LineChartComponent.tsx
+│   │   │   ├── MultiCountryChart.tsx # 🆕 Multi-country comparison
 │   │   │   ├── DualAxisChart.tsx
 │   │   │   ├── ScatterPlot.tsx
 │   │   │   ├── CorrelationHeatmap.tsx
 │   │   │   └── Histogram.tsx
+│   │   ├── country/                 # 🆕 Country components
+│   │   │   ├── CountrySelector.tsx
+│   │   │   └── GlobalRankingTable.tsx
 │   │   ├── ui/                      # Reusable UI components
 │   │   │   ├── Card.tsx
 │   │   │   ├── DataTable.tsx
@@ -105,8 +168,8 @@ macro-market-analyzer/
 │   │       ├── Footer.tsx
 │   │       └── ThemeProvider.tsx
 │   ├── lib/
-│   │   ├── api.ts                   # API client
-│   │   ├── types.ts                 # TypeScript types
+│   │   ├── api.ts                   # API client (expanded!)
+│   │   ├── types.ts                 # TypeScript types (expanded!)
 │   │   └── utils.ts                 # Utility functions
 │   ├── package.json
 │   ├── tsconfig.json
@@ -114,15 +177,19 @@ macro-market-analyzer/
 │   └── next.config.js
 ├── backend/
 │   ├── src/
+│   │   ├── config/
+│   │   │   └── countries.js         # 🆕 30+ country configs
 │   │   ├── controllers/
 │   │   │   ├── dataController.js
 │   │   │   └── analysisController.js
 │   │   ├── services/
-│   │   │   ├── dataService.js       # Data fetching & parsing
+│   │   │   ├── dataService.js       # India data fetching
+│   │   │   ├── countryDataService.js # 🆕 Multi-country data
 │   │   │   ├── analysisService.js   # Statistical analysis
 │   │   │   └── cacheService.js      # Caching logic
 │   │   ├── routes/
 │   │   │   ├── dataRoutes.js
+│   │   │   ├── countryRoutes.js     # 🆕 Country endpoints
 │   │   │   └── analysisRoutes.js
 │   │   ├── data/                    # CSV data files
 │   │   │   ├── cpi_data.csv

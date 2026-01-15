@@ -13,6 +13,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/dashboard', label: 'Dashboard' },
+    { href: '/global', label: '🌍 Global' },
     { href: '/analysis', label: 'Analysis' },
     { href: '/insights', label: 'Insights' },
     { href: '/compare', label: 'Compare' },

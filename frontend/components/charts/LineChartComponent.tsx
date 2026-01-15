@@ -1,15 +1,21 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DataPoint } from '@/lib/types';
 import { formatNumber } from '@/lib/utils';
 
+interface ChartDataPoint {
+  date: string;
+  [key: string]: string | number;
+}
+
 interface LineChartComponentProps {
-  data: DataPoint[];
+  data: ChartDataPoint[];
   title: string;
   dataKey: string;
   color: string;
   yAxisLabel?: string;
+  valueFormatter?: (value: number) => string;
+  height?: number;
 }
 
 export default function LineChartComponent({ 
@@ -17,12 +23,14 @@ export default function LineChartComponent({
   title, 
   dataKey, 
   color,
-  yAxisLabel 
+  yAxisLabel,
+  valueFormatter,
+  height = 320
 }: LineChartComponentProps) {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+        {title && <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>}
         <div className="h-80 flex items-center justify-center text-gray-500 dark:text-gray-400">
           No data available
         </div>
@@ -30,10 +38,12 @@ export default function LineChartComponent({
     );
   }
 
+  const formatValue = valueFormatter || ((value: number) => formatNumber(value, 2));
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
-      <ResponsiveContainer width="100%" height={320}>
+      {title && <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>}
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
           <XAxis 
@@ -49,7 +59,7 @@ export default function LineChartComponent({
             stroke="#9CA3AF"
             tick={{ fill: '#9CA3AF' }}
             label={{ value: yAxisLabel, angle: -90, position: 'insideLeft', fill: '#9CA3AF' }}
-            tickFormatter={(value) => formatNumber(value, 2)}
+            tickFormatter={(value) => formatValue(value)}
           />
           <Tooltip 
             contentStyle={{ 
@@ -59,16 +69,16 @@ export default function LineChartComponent({
               color: '#F3F4F6'
             }}
             labelStyle={{ color: '#F3F4F6' }}
-            formatter={(value: any) => [formatNumber(Number(value), 2), dataKey.toUpperCase()]}
+            formatter={(value: any) => [formatValue(Number(value)), dataKey]}
           />
           <Legend wrapperStyle={{ color: '#9CA3AF' }} />
           <Line 
             type="monotone" 
-            dataKey="value" 
+            dataKey={dataKey}
             stroke={color} 
             strokeWidth={2}
             dot={false}
-            name={dataKey.toUpperCase()}
+            name={dataKey}
             activeDot={{ r: 6 }}
           />
         </LineChart>

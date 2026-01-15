@@ -5,13 +5,14 @@ import { ReactNode } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
+import ChatBot from '@/components/chat/ChatBot'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Macro Market Analyzer - Economic Data Dashboard',
-  description: 'Educational research tool for analyzing relationships between inflation (CPI), USD-INR exchange rates, and Indian stock market (NIFTY 50).',
-  keywords: ['economic analysis', 'CPI', 'inflation', 'USD-INR', 'NIFTY 50', 'market analysis'],
+  title: 'Global Market Analyzer - Economic Data Dashboard',
+  description: 'Compare economic indicators across 35+ countries - Inflation rates, stock market indices, GDP growth, and currency exchange rates with AI-powered insights.',
+  keywords: ['economic analysis', 'global markets', 'inflation', 'stock market', 'currency', 'NIFTY 50', 'S&P 500', 'AI insights'],
 }
 
 export default function RootLayout({
@@ -29,6 +30,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <ChatBot />
           </div>
         </ThemeProvider>
       </body>
