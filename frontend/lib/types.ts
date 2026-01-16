@@ -199,12 +199,110 @@ export interface CountryComparisonData {
   [countryCode: string]: CountryData | { error: string };
 }
 
+export type ComparisonDataType = 'inflation' | 'gdpGrowth' | 'stockIndex' | 'exchangeRate' | 'all';
+
 export interface RegionData {
-  regions: string[];
-  countriesByRegion: {
-    [region: string]: Country[];
-  };
+  [region: string]: Country[];
 }
 
-export type ComparisonDataType = 'all' | 'inflation' | 'cpi' | 'stock' | 'fx' | 'gdp';
+// ============ STOCK MARKET TYPES ============
 
+export interface Stock {
+  symbol: string;
+  name: string;
+  country: string;
+  sector: string;
+  industry: string;
+}
+
+export interface StockHistoricalDataPoint {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface StockProfile {
+  symbol: string;
+  name: string;
+  country: string;
+  sector: string;
+  industry: string;
+  longBusinessSummary?: string;
+  website?: string;
+  fullTimeEmployees?: number;
+  currentPrice?: number;
+  marketOpen?: number;
+  dayHigh?: number;
+  dayLow?: number;
+  previousClose?: number;
+  volume?: number;
+  marketCap?: number;
+  fiftyTwoWeekHigh?: number;
+  fiftyTwoWeekLow?: number;
+  forwardPE?: number;
+  dividendYield?: number;
+  beta?: number;
+  targetMeanPrice?: number;
+  recommendationKey?: string;
+}
+
+export interface StockData {
+  profile: StockProfile;
+  historicalData: StockHistoricalDataPoint[];
+}
+
+// ============ SOCIAL & USER TYPES ============
+
+export interface User {
+  id: string;
+  username: string;
+  avatar?: string;
+  score?: number;
+  insightsCount?: number;
+  commentsCount?: number;
+  createdAt?: string;
+}
+
+export interface Comment {
+  id: string;
+  userId: string;
+  username: string;
+  avatar?: string;
+  content: string;
+  topic: string;
+  likes: number;
+  createdAt: string;
+}
+
+export interface UserInsight {
+  id: string;
+  userId: string;
+  username: string;
+  avatar?: string;
+  title: string;
+  content: string;
+  country?: string;
+  sentiment: 'bullish' | 'bearish' | 'neutral';
+  likes: number;
+  createdAt: string;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  avatar?: string;
+  score: number;
+  rank: number;
+}
+
+export interface Activity {
+  id: string;
+  type: 'comment' | 'insight' | 'like' | 'join';
+  userId: string;
+  username: string;
+  content?: string;
+  timestamp: string;
+}

@@ -13,11 +13,12 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/dashboard', label: 'Dashboard' },
+    { href: '/portfolio', label: '💼 Portfolio' },
+    { href: '/simulator', label: '⚡ Simulator' },
+    { href: '/learn', label: '📚 Learn' },
+    { href: '/sentiment', label: '📰 Sentiment' },
     { href: '/global', label: '🌍 Global' },
-    { href: '/analysis', label: 'Analysis' },
-    { href: '/insights', label: 'Insights' },
-    { href: '/compare', label: 'Compare' },
-    { href: '/about', label: 'About' },
+    { href: '/dynamics', label: '📈 Dynamics' },
   ];
 
   const isActive = (href: string) => {

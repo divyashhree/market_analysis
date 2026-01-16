@@ -5,6 +5,12 @@ import { GlobalInflationEntry, GlobalStockEntry, GlobalCurrencyEntry } from '@/l
 import { getCountryColor } from '../country/CountrySelector';
 import TrendIndicator from '../interactive/TrendIndicator';
 
+// Consistent number formatting to avoid hydration mismatch
+const formatValue = (num: number | null, maxDecimals: number = 2): string => {
+  if (num === null || num === undefined) return 'N/A';
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: maxDecimals }).format(num);
+};
+
 interface GlobalRankingTableProps {
   type: 'inflation' | 'stocks' | 'currencies';
   inflationData?: GlobalInflationEntry[];
@@ -278,7 +284,7 @@ export default function GlobalRankingTable({
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right font-medium text-gray-900 dark:text-white">
-                    {entry.latestValue !== null ? entry.latestValue.toLocaleString(undefined, { maximumFractionDigits: 2 }) : 'N/A'}
+                    {formatValue(entry.latestValue)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-right">
                     <div className="flex items-center justify-end gap-2">

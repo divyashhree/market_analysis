@@ -11,6 +11,14 @@ interface AnimatedNumberProps {
   className?: string;
 }
 
+// Consistent number formatting to avoid hydration mismatch
+const formatNumber = (num: number, decimals: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(num);
+};
+
 export default function AnimatedNumber({
   value,
   duration = 1000,
@@ -19,11 +27,18 @@ export default function AnimatedNumber({
   suffix = '',
   className = '',
 }: AnimatedNumberProps) {
-  const [displayValue, setDisplayValue] = useState(0);
-  const previousValue = useRef(0);
+  const [displayValue, setDisplayValue] = useState(value);
+  const [mounted, setMounted] = useState(false);
+  const previousValue = useRef(value);
   const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const startValue = previousValue.current;
     const endValue = value;
     const startTime = performance.now();
@@ -52,12 +67,9 @@ export default function AnimatedNumber({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [value, duration]);
+  }, [value, duration, mounted]);
 
-  const formattedValue = displayValue.toLocaleString(undefined, {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  const formattedValue = formatNumber(displayValue, decimals);
 
   return (
     <span className={`tabular-nums ${className}`}>

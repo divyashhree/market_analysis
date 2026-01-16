@@ -12,6 +12,12 @@ import StatisticalSummary from '@/components/ui/StatisticalSummary';
 import { ChartSkeleton, StatCardSkeleton } from '@/components/ui/LoadingSkeleton';
 import { downloadCSV, mergeDataByDate, calculatePercentageChange } from '@/lib/utils';
 
+// Social and real-time components
+import ActivityFeed from '@/components/social/ActivityFeed';
+import Comments from '@/components/social/Comments';
+import InsightsFeed from '@/components/social/InsightsFeed';
+import Leaderboard from '@/components/social/Leaderboard';
+
 export default function DashboardPage() {
   const [data, setData] = useState<Dataset | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,9 +115,9 @@ export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">India Dashboard</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Overview of economic indicators and market performance
+          Live overview of economic indicators and market performance with social insights
         </p>
       </div>
 
@@ -175,6 +181,17 @@ export default function DashboardPage() {
         ) : null}
       </div>
 
+      {/* Social & Real-time Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="lg:col-span-2">
+          <InsightsFeed />
+        </div>
+        <div className="space-y-8">
+          <ActivityFeed />
+          <Leaderboard />
+        </div>
+      </div>
+
       {/* Charts */}
       <div className="grid grid-cols-1 gap-8 mb-8">
         {loading ? (
@@ -208,6 +225,11 @@ export default function DashboardPage() {
             />
           </>
         ) : null}
+      </div>
+
+      {/* Discussion Section */}
+      <div className="mb-8">
+        <Comments country="IN" pageId="dashboard" />
       </div>
 
       {/* Statistical Summary */}

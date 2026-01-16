@@ -1,22 +1,30 @@
 {
   "name": "macro-market-analyzer-backend",
-  "version": "1.0.0",
-  "description": "Backend API for Macro Market Analyzer",
+  "version": "2.0.0",
+  "description": "Backend API for Macro Market Analyzer with Real-time Features",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
-  "keywords": ["economic", "analysis", "api"],
+  "keywords": [
+    "economic",
+    "analysis",
+    "api",
+    "real-time",
+    "websocket"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.0",
-    "cors": "^2.8.5",
     "axios": "^1.6.0",
+    "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.3.0",
-    "node-cache": "^5.1.2"
+    "express": "^4.18.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"

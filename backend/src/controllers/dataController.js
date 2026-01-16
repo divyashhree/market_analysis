@@ -86,6 +86,35 @@ class DataController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/stocks/search/:query
+   * Search for stocks by symbol or name
+   */
+  async searchStocks(req, res, next) {
+    try {
+      const { query } = req.params;
+      const results = await dataService.searchStocks(query);
+      res.json(results);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/stocks/:symbol
+   * Get historical and current data for a specific stock
+   */
+  async getStockData(req, res, next) {
+    try {
+      const { symbol } = req.params;
+      const { period } = req.query; // e.g., '1y', '6m', 'max'
+      const data = await dataService.fetchStockData(symbol.toUpperCase(), period);
+      res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new DataController();

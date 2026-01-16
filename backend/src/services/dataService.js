@@ -4,6 +4,7 @@ const csv = require('csv-parser');
 const { Readable } = require('stream');
 const axios = require('axios');
 const cacheService = require('./cacheService');
+const { getAllStocks, getStock } = require('../config/stocks');
 
 /**
  * Data Service - Handles fetching and parsing of economic data
@@ -144,13 +145,24 @@ class DataService {
    * Get all data (CPI, USD-INR, NIFTY)
    */
   async getAllData() {
-    const [cpi, usdinr, nifty] = await Promise.all([
+    const cacheKey = 'all_data';
+    const cached = cacheService.get(cacheKey);
+    if (cached) return cached;
+
+    const data = await Promise.all([
       this.fetchCPIData(),
       this.fetchUSDINRData(),
-      this.fetchNiftyData()
+      this.fetchNiftyData(),
     ]);
+    
+    const combinedData = {
+      cpi: data[0],
+      usdinr: data[1],
+      nifty: data[2],
+    };
 
-    return { cpi, usdinr, nifty };
+    cacheService.set(cacheKey, combinedData);
+    return combinedData;
   }
 
   /**
@@ -176,6 +188,105 @@ class DataService {
       usdinr: this.filterByDateRange(allData.usdinr, startDate, endDate),
       nifty: this.filterByDateRange(allData.nifty, startDate, endDate),
     };
+  }
+
+  /**
+   * Search for stocks by symbol or name.
+   * @param {string} query - The search query.
+   * @returns {Promise<Array>} - A list of matching stocks.
+   */
+  async searchStocks(query) {
+    const lowerCaseQuery = query.toLowerCase();
+    const allStocks = getAllStocks();
+
+    const results = allStocks.filter(stock => 
+      stock.symbol.toLowerCase().includes(lowerCaseQuery) ||
+      stock.name.toLowerCase().includes(lowerCaseQuery)
+    );
+
+    return results.slice(0, 15); // Return top 15 matches
+  }
+
+  /**
+   * Fetches detailed data for a specific stock symbol from Yahoo Finance.
+   * @param {string} symbol - The stock symbol (e.g., 'AAPL').
+   * @param {string} [period='1y'] - The time period (e.g., '1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max').
+   * @returns {Promise<Object>} - The stock data including profile and historical prices.
+   */
+  async fetchStockData(symbol, period = '1y') {
+    const cacheKey = `stock_${symbol}_${period}`;
+    const cached = cacheService.get(cacheKey);
+    if (cached) return cached;
+
+    try {
+      const stockInfo = getStock(symbol);
+      if (!stockInfo) {
+        throw new Error(`Stock with symbol ${symbol} not found in config.`);
+      }
+
+      // Fetch historical data
+      const chartUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${period}&interval=1d`;
+      const chartResponse = await axios.get(chartUrl, { timeout: 10000 });
+
+      let historicalData = [];
+      if (chartResponse.data?.chart?.result?.[0]) {
+        const result = chartResponse.data.chart.result[0];
+        const timestamps = result.timestamp;
+        const quotes = result.indicators.quote[0];
+        historicalData = timestamps.map((ts, i) => ({
+          date: new Date(ts * 1000).toISOString().split('T')[0],
+          open: quotes.open[i],
+          high: quotes.high[i],
+          low: quotes.low[i],
+          close: quotes.close[i],
+          volume: quotes.volume[i],
+        })).filter(d => d.close !== null);
+      }
+
+      // Fetch quote summary for profile data
+      const summaryUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?modules=price,summaryProfile,financialData,defaultKeyStatistics`;
+      const summaryResponse = await axios.get(summaryUrl, { timeout: 10000 });
+      
+      const summary = summaryResponse.data?.quoteSummary?.result?.[0] || {};
+      
+      const profile = {
+        ...stockInfo,
+        currentPrice: summary.price?.regularMarketPrice?.raw,
+        marketOpen: summary.price?.regularMarketOpen?.raw,
+        dayHigh: summary.price?.regularMarketDayHigh?.raw,
+        dayLow: summary.price?.regularMarketDayLow?.raw,
+        previousClose: summary.price?.regularMarketPreviousClose?.raw,
+        volume: summary.price?.regularMarketVolume?.raw,
+        marketCap: summary.price?.marketCap?.raw,
+        fiftyTwoWeekHigh: summary.summaryDetail?.fiftyTwoWeekHigh?.raw,
+        fiftyTwoWeekLow: summary.summaryDetail?.fiftyTwoWeekLow?.raw,
+        forwardPE: summary.summaryDetail?.forwardPE?.raw,
+        dividendYield: summary.summaryDetail?.dividendYield?.raw,
+        beta: summary.summaryDetail?.beta?.raw,
+        longBusinessSummary: summary.summaryProfile?.longBusinessSummary,
+        website: summary.summaryProfile?.website,
+        sector: summary.summaryProfile?.sector,
+        industry: summary.summaryProfile?.industry,
+        fullTimeEmployees: summary.summaryProfile?.fullTimeEmployees,
+        targetMeanPrice: summary.financialData?.targetMeanPrice?.raw,
+        recommendationKey: summary.financialData?.recommendationKey,
+      };
+
+      const data = {
+        profile,
+        historicalData,
+      };
+
+      cacheService.set(cacheKey, data, 300); // Cache for 5 minutes
+      return data;
+
+    } catch (error) {
+      console.error(`Failed to fetch data for stock ${symbol}:`, error.message);
+      if (error.response) {
+        console.error('Response Status:', error.response.status);
+      }
+      throw new Error(`Could not fetch data for ${symbol}. The stock may be delisted or the symbol invalid.`);
+    }
   }
 }
 

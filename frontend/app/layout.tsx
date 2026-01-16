@@ -6,13 +6,14 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import ChatBot from '@/components/chat/ChatBot'
+import MarketTicker from '@/components/social/MarketTicker'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Global Market Analyzer - Economic Data Dashboard',
-  description: 'Compare economic indicators across 35+ countries - Inflation rates, stock market indices, GDP growth, and currency exchange rates with AI-powered insights.',
-  keywords: ['economic analysis', 'global markets', 'inflation', 'stock market', 'currency', 'NIFTY 50', 'S&P 500', 'AI insights'],
+  title: 'Global Market Analyzer - Real-time Economic Data & Social Insights',
+  description: 'Compare economic indicators across 35+ countries with real-time data, social features, and AI-powered insights. Track inflation, stock markets, and currency exchange rates.',
+  keywords: ['economic analysis', 'global markets', 'inflation', 'stock market', 'currency', 'NIFTY 50', 'S&P 500', 'AI insights', 'real-time data', 'social trading'],
 }
 
 export default function RootLayout({
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <div className="min-h-screen flex flex-col">
+            <MarketTicker />
             <Navbar />
             <main className="flex-grow">
               {children}

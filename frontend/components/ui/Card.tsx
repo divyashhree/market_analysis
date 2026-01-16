@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 interface CardProps {
   children: ReactNode;
@@ -8,15 +9,27 @@ interface CardProps {
 
 export function Card({ children, className = '', title }: CardProps) {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 ${className}`}>
+    <div className={cn('bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700', className)}>
       {title && (
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 px-6 pt-6">
           {title}
         </h3>
       )}
       {children}
     </div>
   );
+}
+
+export function CardHeader({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <div className={cn('px-6 pt-6 pb-2', className)}>{children}</div>;
+}
+
+export function CardTitle({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <h3 className={cn('text-xl font-bold text-gray-900 dark:text-white', className)}>{children}</h3>;
+}
+
+export function CardContent({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <div className={cn('px-6 pb-6', className)}>{children}</div>;
 }
 
 export default Card;

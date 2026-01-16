@@ -5,6 +5,12 @@ const dataRoutes = require('./routes/dataRoutes');
 const analysisRoutes = require('./routes/analysisRoutes');
 const countryRoutes = require('./routes/countryRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const socialRoutes = require('./routes/socialRoutes');
+const stockRoutes = require('./routes/stockRoutes');
+const simulatorRoutes = require('./routes/simulatorRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes');
+const educationRoutes = require('./routes/educationRoutes');
+const sentimentRoutes = require('./routes/sentimentRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -30,6 +36,12 @@ app.use('/api/data', dataRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/countries', countryRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/social', socialRoutes);
+app.use('/api/stocks', stockRoutes);
+app.use('/api/simulator', simulatorRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/education', educationRoutes);
+app.use('/api/sentiment', sentimentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -43,23 +55,30 @@ app.get('/health', (req, res) => {
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    message: 'Macro Market Analyzer API',
+    message: '🌍 Global Market Analyzer API',
     version: '2.1.0',
     endpoints: {
       data: '/api/data',
       analysis: '/api/analysis',
       countries: '/api/countries',
       chat: '/api/chat',
+      social: '/api/social',
+      stocks: '/api/stocks',
       health: '/health'
     },
     features: [
-      'Multi-country comparison (35+ countries)',
-      'Global inflation tracking',
-      'Stock market indices from major exchanges',
-      'Currency exchange rates',
-      'Regional economic analysis',
-      'AI-powered economic insights chatbot'
-    ]
+      '🌍 Multi-country comparison (35+ countries)',
+      '📊 Global inflation tracking with World Bank data',
+      '📈 Stock market indices from major exchanges',
+      '💱 Currency exchange rates via Yahoo Finance',
+      '🗺️ Regional economic analysis',
+      '🤖 AI-powered economic insights chatbot',
+      '🔌 Real-time WebSocket updates',
+      '💬 Social features (comments, reactions, insights)',
+      '📢 Market alerts and predictions',
+      '👥 Community activity feed'
+    ],
+    websocket: 'ws://localhost:5000/ws'
   });
 });
 
