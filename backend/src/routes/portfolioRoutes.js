@@ -76,10 +76,10 @@ router.get('/:userId', (req, res) => {
  * @route PUT /api/portfolio/:userId
  * @desc Update portfolio holdings
  */
-router.put('/:userId', (req, res) => {
+router.put('/:userId', async (req, res) => {
   try {
     const { holdings } = req.body;
-    const portfolio = portfolioService.updatePortfolio(req.params.userId, holdings);
+    const portfolio = await portfolioService.updatePortfolio(req.params.userId, holdings);
     
     if (!portfolio) {
       return res.status(404).json({ error: 'Portfolio not found' });

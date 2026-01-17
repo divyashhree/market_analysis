@@ -11,6 +11,8 @@ import DateRangePicker from '@/components/ui/DateRangePicker';
 import StatisticalSummary from '@/components/ui/StatisticalSummary';
 import { ChartSkeleton, StatCardSkeleton } from '@/components/ui/LoadingSkeleton';
 import { downloadCSV, mergeDataByDate, calculatePercentageChange } from '@/lib/utils';
+import { GlobalDataStatus, DataFreshnessIndicator } from '@/components/ui/DataFreshnessIndicator';
+import { InsufficientDataWarning, DataFrequencyInfo, DataRangeRecommendation } from '@/components/ui/DataWarnings';
 
 // Social and real-time components
 import ActivityFeed from '@/components/social/ActivityFeed';
@@ -121,6 +123,49 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* Global Data Status Banner */}
+      {data?.metadata && <GlobalDataStatus metadata={data.metadata} />}
+
+      {/* Data Quality Warnings */}
+      {data && (
+        <>
+          {data.cpi.length === 0 && (
+            <InsufficientDataWarning 
+              indicator="CPI" 
+              dataPoints={0}
+              reason="CPI is updated annually by World Bank. Select a date range of at least 1 year (e.g., 2024-01-01 to 2025-12-31) to see CPI data."
+            />
+          )}
+          {data.cpi.length === 1 && (
+            <>
+              <InsufficientDataWarning 
+                indicator="CPI" 
+                dataPoints={1}
+                reason="CPI is updated annually. Select a multi-year range for meaningful analysis."
+              />
+              <DataFrequencyInfo 
+                indicator="CPI"
+                frequency="annual"
+                nextUpdate="typically January of each year"
+              />
+            </>
+          )}
+          {data.cpi.length > 1 && data.cpi.length < 5 && (
+            <DataFrequencyInfo 
+              indicator="CPI"
+              frequency="annual"
+            />
+          )}
+          {data.nifty.length < 3 && (
+            <DataRangeRecommendation 
+              indicator="NIFTY 50"
+              recommended="3-6 months"
+              current={`${Math.max(1, data.nifty.length)} month${data.nifty.length !== 1 ? 's' : ''}`}
+            />
+          )}
+        </>
+      )}
+
       {/* Date Range Selector */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col sm:flex-row gap-4 items-end justify-between">
@@ -203,14 +248,14 @@ export default function DashboardPage() {
         ) : data ? (
           <>
             <LineChartComponent
-              data={data.cpi}
+              data={data.cpi.map(item => ({ ...item, cpi: item.value }))}
               title="Consumer Price Index (CPI) - India"
               dataKey="cpi"
               color="#EF4444"
               yAxisLabel="Index Value"
             />
             <LineChartComponent
-              data={data.usdinr}
+              data={data.usdinr.map(item => ({ ...item, usdinr: item.value }))}
               title="USD-INR Exchange Rate"
               dataKey="usdinr"
               color="#10B981"

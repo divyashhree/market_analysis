@@ -102,6 +102,13 @@ class PortfolioService {
   }
 
   /**
+   * Update an existing portfolio (alias for createPortfolio)
+   */
+  updatePortfolio(userId, holdings) {
+    return this.createPortfolio(userId, holdings);
+  }
+
+  /**
    * Get portfolio by user ID
    */
   getPortfolio(userId) {

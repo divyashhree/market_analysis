@@ -1,0 +1,10 @@
+{
+  "lastUpdate": "2026-01-17T06:27:47.676Z",
+  "updatedBy": "update_csv_data.js",
+  "status": {
+    "nifty": "success",
+    "usdinr": "success",
+    "cpi": "success"
+  },
+  "note": "This data is a fallback. The app fetches live data from APIs when available."
+}

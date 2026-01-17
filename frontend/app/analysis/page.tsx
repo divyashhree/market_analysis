@@ -11,6 +11,7 @@ import PercentageChangeHeatmap from '@/components/charts/PercentageChangeHeatmap
 import LineChartWithEvents from '@/components/charts/LineChartWithEvents';
 import { Card } from '@/components/ui/Card';
 import { ChartSkeleton } from '@/components/ui/LoadingSkeleton';
+import { GlobalDataStatus } from '@/components/ui/DataFreshnessIndicator';
 import { mergeDataByDate, calculateCorrelation } from '@/lib/utils';
 import { getEventsInRange } from '@/lib/economicEvents';
 
@@ -101,6 +102,9 @@ export default function AnalysisPage() {
           Advanced correlation analysis and comparative visualizations
         </p>
       </div>
+
+      {/* Global Data Status Banner */}
+      {data?.metadata && <GlobalDataStatus metadata={data.metadata} />}
 
       {/* Dual Axis Chart Selector */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">

@@ -315,6 +315,7 @@ class CountryDataService {
           if (data.length > 2) {
             const country = getCountry(code);
             const latest = data[data.length - 1];
+            const previous = data[data.length - 2];
             const oneYearAgo = data[Math.max(0, data.length - 13)];
             const yearStart = data[0];
             
@@ -322,6 +323,10 @@ class CountryDataService {
               ((latest.value - yearStart.value) / yearStart.value * 100) : null;
             const oneYearReturn = latest && oneYearAgo ?
               ((latest.value - oneYearAgo.value) / oneYearAgo.value * 100) : null;
+            
+            // Calculate latest change (month-over-month)
+            const latestChange = latest && previous ?
+              ((latest.value - previous.value) / previous.value * 100) : 0;
 
             results.push({
               code,
@@ -330,6 +335,7 @@ class CountryDataService {
               region: country.region,
               indexName: country.stockIndex.name,
               latestValue: latest?.value || null,
+              latestChange: parseFloat(latestChange.toFixed(2)),
               ytdReturn,
               oneYearReturn,
               historicalData: data

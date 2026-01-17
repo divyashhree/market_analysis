@@ -4,6 +4,7 @@ const cacheService = require('./cacheService');
 /**
  * Sentiment Analysis Service
  * Analyzes news sentiment and correlates with market movements
+ * Uses real RSS feeds from financial news sources
  */
 class SentimentService {
   constructor() {
@@ -11,96 +12,241 @@ class SentimentService {
     this.positiveKeywords = [
       'rally', 'surge', 'gain', 'rise', 'bull', 'growth', 'profit', 'boost',
       'upgrade', 'outperform', 'beat', 'exceed', 'strong', 'robust', 'optimistic',
-      'recovery', 'expansion', 'investment', 'inflow', 'positive', 'breakthrough'
+      'recovery', 'expansion', 'investment', 'inflow', 'positive', 'breakthrough',
+      'soar', 'climb', 'jump', 'advance', 'record', 'high', 'boom'
     ];
     
     this.negativeKeywords = [
       'fall', 'drop', 'crash', 'bear', 'loss', 'decline', 'plunge', 'slump',
       'downgrade', 'underperform', 'miss', 'weak', 'concern', 'fear', 'panic',
-      'recession', 'crisis', 'outflow', 'negative', 'warning', 'cut', 'risk'
+      'recession', 'crisis', 'outflow', 'negative', 'warning', 'cut', 'risk',
+      'tumble', 'sink', 'slide', 'retreat', 'low', 'down', 'sell-off'
     ];
     
-    // Market moving keywords
+    // Market moving keywords for categorization
     this.marketKeywords = {
-      rbi: ['RBI', 'repo rate', 'monetary policy', 'MPC', 'interest rate', 'CRR', 'SLR'],
-      fed: ['Fed', 'Federal Reserve', 'FOMC', 'Jerome Powell', 'US rates'],
-      budget: ['budget', 'fiscal deficit', 'capex', 'tax', 'disinvestment'],
-      earnings: ['Q1', 'Q2', 'Q3', 'Q4', 'quarterly results', 'earnings', 'profit', 'revenue'],
-      global: ['crude oil', 'dollar', 'FII', 'DII', 'global markets'],
+      rbi: ['RBI', 'repo rate', 'monetary policy', 'MPC', 'interest rate', 'CRR', 'SLR', 'Reserve Bank'],
+      fed: ['Fed', 'Federal Reserve', 'FOMC', 'Jerome Powell', 'US rates', 'treasury'],
+      budget: ['budget', 'fiscal deficit', 'capex', 'tax', 'disinvestment', 'GST'],
+      earnings: ['Q1', 'Q2', 'Q3', 'Q4', 'quarterly results', 'earnings', 'profit', 'revenue', 'results'],
+      global: ['crude oil', 'dollar', 'FII', 'DII', 'global markets', 'oil price', 'forex'],
+      markets: ['Sensex', 'NIFTY', 'BSE', 'NSE', 'stock market', 'share', 'equity'],
     };
     
-    // Simulated news feed (in production, would use news API)
+    // RSS feed URLs for financial news
+    this.rssFeeds = [
+      {
+        url: 'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',
+        source: 'Economic Times'
+      },
+      {
+        url: 'https://www.moneycontrol.com/rss/marketreports.xml',
+        source: 'Moneycontrol'
+      },
+      {
+        url: 'https://www.livemint.com/rss/markets',
+        source: 'Mint'
+      },
+      {
+        url: 'https://feeds.feedburner.com/ndtvprofit-latest',
+        source: 'NDTV Profit'
+      }
+    ];
+    
+    // News cache - will be populated from RSS feeds
     this.newsCache = [];
-    this.generateMockNews();
+    this.lastFetch = null;
+    this.fetchInterval = 5 * 60 * 1000; // Refresh every 5 minutes
+    
+    // Initialize with real news
+    this.fetchRealNews();
   }
 
   /**
-   * Generate mock news for demonstration
+   * Parse RSS XML to extract news items
    */
-  generateMockNews() {
+  parseRSSXML(xml, source) {
+    const items = [];
+    try {
+      // Simple XML parsing for RSS items
+      const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+      const titleRegex = /<title><!\[CDATA\[(.*?)\]\]>|<title>(.*?)<\/title>/i;
+      const linkRegex = /<link>(.*?)<\/link>/i;
+      const pubDateRegex = /<pubDate>(.*?)<\/pubDate>/i;
+      const descRegex = /<description><!\[CDATA\[(.*?)\]\]>|<description>(.*?)<\/description>/i;
+
+      let match;
+      while ((match = itemRegex.exec(xml)) !== null) {
+        const itemContent = match[1];
+        
+        const titleMatch = titleRegex.exec(itemContent);
+        const linkMatch = linkRegex.exec(itemContent);
+        const pubDateMatch = pubDateRegex.exec(itemContent);
+        const descMatch = descRegex.exec(itemContent);
+        
+        const title = titleMatch ? (titleMatch[1] || titleMatch[2] || '').trim() : '';
+        const link = linkMatch ? linkMatch[1].trim() : '#';
+        const pubDate = this.parseDate(pubDateMatch ? pubDateMatch[1] : null);
+        const description = descMatch ? (descMatch[1] || descMatch[2] || '').trim() : '';
+        
+        if (title) {
+          items.push({
+            headline: this.cleanHTML(title),
+            url: link,
+            timestamp: pubDate,
+            source,
+            description: this.cleanHTML(description).substring(0, 200)
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`Error parsing RSS from ${source}:`, error.message);
+    }
+    return items;
+  }
+
+  /**
+   * Parse date from various formats
+   */
+  parseDate(dateStr) {
+    if (!dateStr) return new Date().toISOString();
+    
+    try {
+      const date = new Date(dateStr);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString();
+      }
+    } catch (e) {
+      // Try manual parsing for common RSS date formats
+    }
+    
+    // Return current time as fallback
+    return new Date().toISOString();
+  }
+
+  /**
+   * Clean HTML tags from text
+   */
+  cleanHTML(text) {
+    return text
+      .replace(/<[^>]*>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Categorize news based on keywords
+   */
+  categorizeNews(headline) {
+    const lowerHeadline = headline.toLowerCase();
+    
+    for (const [category, keywords] of Object.entries(this.marketKeywords)) {
+      for (const keyword of keywords) {
+        if (lowerHeadline.includes(keyword.toLowerCase())) {
+          return category;
+        }
+      }
+    }
+    return 'general';
+  }
+
+  /**
+   * Fetch real news from RSS feeds
+   */
+  async fetchRealNews() {
+    // Check if we have recent cached news
+    const cacheKey = 'real_news_feed';
+    const cached = cacheService.get(cacheKey);
+    if (cached && this.lastFetch && (Date.now() - this.lastFetch) < this.fetchInterval) {
+      this.newsCache = cached;
+      return;
+    }
+
+    console.log('📰 Fetching real financial news from RSS feeds...');
+    const allNews = [];
+    
+    // Fetch from all RSS feeds in parallel
+    const feedPromises = this.rssFeeds.map(async (feed) => {
+      try {
+        const response = await axios.get(feed.url, {
+          timeout: 10000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/rss+xml, application/xml, text/xml'
+          }
+        });
+        
+        const items = this.parseRSSXML(response.data, feed.source);
+        console.log(`✅ Fetched ${items.length} articles from ${feed.source}`);
+        return items;
+      } catch (error) {
+        console.warn(`⚠️ Failed to fetch from ${feed.source}: ${error.message}`);
+        return [];
+      }
+    });
+
+    try {
+      const results = await Promise.all(feedPromises);
+      results.forEach(items => allNews.push(...items));
+      
+      // Sort by timestamp and assign IDs
+      this.newsCache = allNews
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 50) // Keep top 50 articles
+        .map((item, index) => ({
+          ...item,
+          id: index + 1,
+          category: this.categorizeNews(item.headline)
+        }));
+      
+      this.lastFetch = Date.now();
+      cacheService.set(cacheKey, this.newsCache, 300); // Cache for 5 minutes
+      
+      console.log(`📰 Total news articles cached: ${this.newsCache.length}`);
+    } catch (error) {
+      console.error('Error fetching news:', error.message);
+      // Keep existing cache if fetch fails
+    }
+    
+    // If no news fetched, use fallback
+    if (this.newsCache.length === 0) {
+      this.generateFallbackNews();
+    }
+  }
+
+  /**
+   * Generate fallback news only if RSS feeds fail
+   */
+  generateFallbackNews() {
+    console.log('⚠️ Using fallback news data as RSS feeds unavailable');
     this.newsCache = [
       {
         id: 1,
-        headline: 'RBI keeps repo rate unchanged at 6.5%, signals cautious stance on inflation',
-        source: 'Economic Times',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        headline: 'Markets await RBI monetary policy decision this week',
+        source: 'Market Update',
+        timestamp: new Date().toISOString(),
         category: 'rbi',
         url: '#',
       },
       {
         id: 2,
-        headline: 'NIFTY rallies 300 points on strong FII inflows, IT stocks lead gains',
-        source: 'Moneycontrol',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        category: 'markets',
+        headline: 'Global markets show mixed trends amid economic uncertainty',
+        source: 'Market Update',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        category: 'global',
         url: '#',
       },
       {
         id: 3,
-        headline: 'Crude oil prices surge above $85 amid Middle East tensions',
-        source: 'Reuters',
-        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        category: 'global',
-        url: '#',
-      },
-      {
-        id: 4,
-        headline: 'TCS Q3 results beat estimates, revenue up 8% YoY',
-        source: 'Business Standard',
-        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+        headline: 'Quarterly earnings season kicks off with major IT companies reporting',
+        source: 'Market Update',
+        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         category: 'earnings',
-        url: '#',
-      },
-      {
-        id: 5,
-        headline: 'Government announces Rs 11 lakh crore capex for infrastructure in FY25',
-        source: 'CNBC TV18',
-        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        category: 'budget',
-        url: '#',
-      },
-      {
-        id: 6,
-        headline: 'Rupee weakens to 83.5 against dollar on FII outflows',
-        source: 'Financial Express',
-        timestamp: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(),
-        category: 'global',
-        url: '#',
-      },
-      {
-        id: 7,
-        headline: 'Banking stocks under pressure as NPA concerns resurface',
-        source: 'Mint',
-        timestamp: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
-        category: 'sectors',
-        url: '#',
-      },
-      {
-        id: 8,
-        headline: 'Fed signals potential rate cuts in 2024, global markets cheer',
-        source: 'Bloomberg',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        category: 'fed',
         url: '#',
       },
     ];
@@ -150,9 +296,12 @@ class SentimentService {
   }
 
   /**
-   * Get news feed with sentiment
+   * Get news feed with sentiment (async to ensure fresh data)
    */
-  getNewsFeed(options = {}) {
+  async getNewsFeed(options = {}) {
+    // Refresh news if needed
+    await this.fetchRealNews();
+    
     const { category, limit = 10 } = options;
     
     let news = [...this.newsCache];
@@ -163,20 +312,23 @@ class SentimentService {
     
     return news.slice(0, limit).map(item => ({
       ...item,
-      sentiment: this.analyzeSentiment(item.headline),
+      sentiment: this.analyzeSentiment(item.headline + ' ' + (item.description || '')),
     }));
   }
 
   /**
-   * Get market sentiment summary
+   * Get market sentiment summary (async to ensure fresh data)
    */
-  getMarketSentiment() {
+  async getMarketSentiment() {
+    // Refresh news if needed
+    await this.fetchRealNews();
+    
     const allNews = this.newsCache;
     let totalScore = 0;
     const categoryScores = {};
     
     allNews.forEach(news => {
-      const analysis = this.analyzeSentiment(news.headline);
+      const analysis = this.analyzeSentiment(news.headline + ' ' + (news.description || ''));
       totalScore += analysis.score;
       
       if (!categoryScores[news.category]) {
@@ -186,7 +338,7 @@ class SentimentService {
       categoryScores[news.category].count++;
     });
     
-    const avgScore = totalScore / allNews.length;
+    const avgScore = allNews.length > 0 ? totalScore / allNews.length : 0;
     
     let overallSentiment = 'Neutral';
     let fearGreedIndex = 50;
@@ -215,7 +367,7 @@ class SentimentService {
       categorySentiments,
       lastUpdated: new Date().toISOString(),
       indicators: {
-        fiiActivity: avgScore > 0 ? 'Buying' : 'Selling',
+        fiiActivity: avgScore > 0 ? 'Buying' : avgScore < 0 ? 'Selling' : 'Neutral',
         volatilityExpectation: Math.abs(avgScore) > 1 ? 'High' : 'Low',
         trendStrength: Math.abs(avgScore) > 0.5 ? 'Strong' : 'Weak',
       },
@@ -223,24 +375,41 @@ class SentimentService {
   }
 
   /**
-   * Get sentiment trend over time (mock data)
+   * Get sentiment trend based on actual cached news timestamps
    */
-  getSentimentTrend(days = 7) {
+  async getSentimentTrend(days = 7) {
+    // Refresh news if needed
+    await this.fetchRealNews();
+    
     const trend = [];
     const now = new Date();
     
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
       
-      // Generate realistic-looking sentiment scores
-      const baseScore = 50 + Math.sin(i * 0.8) * 20;
-      const noise = (Math.random() - 0.5) * 15;
+      // Filter news for this day
+      const dayNews = this.newsCache.filter(news => {
+        const newsDate = new Date(news.timestamp).toISOString().split('T')[0];
+        return newsDate === dateStr;
+      });
+      
+      // Calculate sentiment for this day
+      let dayScore = 0;
+      dayNews.forEach(news => {
+        const analysis = this.analyzeSentiment(news.headline);
+        dayScore += analysis.score;
+      });
+      
+      const avgScore = dayNews.length > 0 ? dayScore / dayNews.length : 0;
+      const fearGreedIndex = 50 + (avgScore * 15);
       
       trend.push({
-        date: date.toISOString().split('T')[0],
-        fearGreedIndex: Math.round(Math.max(10, Math.min(90, baseScore + noise))),
-        newsCount: Math.floor(Math.random() * 20) + 10,
+        date: dateStr,
+        fearGreedIndex: Math.round(Math.max(10, Math.min(90, fearGreedIndex))),
+        newsCount: dayNews.length,
+        sentiment: avgScore > 0.3 ? 'positive' : avgScore < -0.3 ? 'negative' : 'neutral'
       });
     }
     
@@ -250,7 +419,10 @@ class SentimentService {
   /**
    * Get key market movers from news
    */
-  getMarketMovers() {
+  async getMarketMovers() {
+    // Refresh news if needed
+    await this.fetchRealNews();
+    
     const keywords = {};
     
     this.newsCache.forEach(news => {
@@ -279,8 +451,8 @@ class SentimentService {
    * Extract stock/entity mentions from text
    */
   extractMentions(text) {
-    const stocks = ['TCS', 'NIFTY', 'RELIANCE', 'HDFC', 'INFOSYS', 'ICICI', 'SBI', 'BHARTI'];
-    const entities = ['RBI', 'Fed', 'Government', 'FII', 'DII'];
+    const stocks = ['TCS', 'NIFTY', 'SENSEX', 'RELIANCE', 'HDFC', 'INFOSYS', 'ICICI', 'SBI', 'BHARTI', 'WIPRO', 'HCL', 'TATA', 'BAJAJ', 'KOTAK', 'AXIS', 'LIC', 'ADANI'];
+    const entities = ['RBI', 'Fed', 'Government', 'FII', 'DII', 'SEBI', 'MPC'];
     const allMentions = [...stocks, ...entities];
     
     return allMentions.filter(mention => 
@@ -291,9 +463,9 @@ class SentimentService {
   /**
    * Get alerts based on sentiment changes
    */
-  getSentimentAlerts() {
+  async getSentimentAlerts() {
     const alerts = [];
-    const sentiment = this.getMarketSentiment();
+    const sentiment = await this.getMarketSentiment();
     
     if (sentiment.fearGreedIndex > 75) {
       alerts.push({

@@ -203,19 +203,19 @@ class WebSocketService {
   }
 
   startMarketUpdates() {
-    // Simulate real-time market updates every 30 seconds
+    // Fetch real market data every 60 seconds
     this.updateInterval = setInterval(() => {
       this.sendMarketUpdate();
-    }, 30000);
+    }, 60000);
 
-    // Send initial update
+    // Send initial update after 5 seconds
     setTimeout(() => this.sendMarketUpdate(), 5000);
   }
 
   async sendMarketUpdate() {
     try {
-      // Generate simulated real-time data changes
-      const updates = this.generateMarketUpdates();
+      // Fetch real market data from countryDataService
+      const updates = await this.fetchRealMarketData();
       
       // Broadcast to all clients
       this.broadcast({
@@ -231,23 +231,49 @@ class WebSocketService {
     }
   }
 
-  generateMarketUpdates() {
+  async fetchRealMarketData() {
     const countries = ['US', 'IN', 'GB', 'JP', 'DE', 'CN', 'FR', 'BR'];
     const updates = {};
 
-    countries.forEach(code => {
-      const change = (Math.random() - 0.5) * 2; // -1% to +1%
-      const stockChange = (Math.random() - 0.5) * 4; // -2% to +2%
-      
-      updates[code] = {
-        stockChange: parseFloat(stockChange.toFixed(2)),
-        stockTrend: stockChange > 0 ? 'up' : stockChange < 0 ? 'down' : 'stable',
-        currencyChange: parseFloat(change.toFixed(3)),
-        volume: Math.floor(Math.random() * 1000000),
-        lastUpdate: new Date().toISOString()
-      };
+    // Fetch real data for each country in parallel
+    const fetchPromises = countries.map(async (code) => {
+      try {
+        const stockData = await countryDataService.fetchStockIndex(code);
+        
+        if (stockData && stockData.length >= 2) {
+          const latest = stockData[stockData.length - 1];
+          const previous = stockData[stockData.length - 2];
+          
+          const stockChange = previous.value > 0 
+            ? ((latest.value - previous.value) / previous.value * 100) 
+            : 0;
+          
+          updates[code] = {
+            value: latest.value,
+            stockChange: parseFloat(stockChange.toFixed(2)),
+            stockTrend: stockChange > 0 ? 'up' : stockChange < 0 ? 'down' : 'stable',
+            lastUpdate: latest.date,
+            indexName: latest.indexName || code
+          };
+        } else {
+          // Fallback with neutral data
+          updates[code] = {
+            stockChange: 0,
+            stockTrend: 'stable',
+            lastUpdate: new Date().toISOString()
+          };
+        }
+      } catch (error) {
+        console.warn(`Failed to fetch data for ${code}:`, error.message);
+        updates[code] = {
+          stockChange: 0,
+          stockTrend: 'stable',
+          lastUpdate: new Date().toISOString()
+        };
+      }
     });
 
+    await Promise.all(fetchPromises);
     return updates;
   }
 

@@ -180,7 +180,23 @@ export default function PortfolioPage() {
   };
 
   const addHolding = async () => {
-    if (!newHolding.symbol || newHolding.quantity <= 0 || newHolding.avgPrice <= 0) return;
+    console.log('addHolding called with:', newHolding);
+    
+    // Validate inputs
+    if (!newHolding.symbol || !newHolding.symbol.trim()) {
+      alert('Please enter a stock symbol');
+      return;
+    }
+    if (newHolding.quantity <= 0) {
+      alert('Please enter a valid quantity (greater than 0)');
+      return;
+    }
+    if (newHolding.avgPrice <= 0) {
+      alert('Please enter a valid price (greater than 0)');
+      return;
+    }
+    
+    console.log('Validation passed, updating portfolio...');
     
     try {
       const holdings = portfolio?.holdings || [];
@@ -198,13 +214,19 @@ export default function PortfolioPage() {
         updatedHoldings = [...holdings, newHolding];
       }
       
+      console.log('Updated holdings:', updatedHoldings);
+      
       if (!portfolio) {
+        console.log('Creating new portfolio...');
         const result = await api.createPortfolio(userId, updatedHoldings);
         setPortfolio(result);
       } else {
+        console.log('Updating existing portfolio...');
         const result = await api.updatePortfolio(userId, updatedHoldings);
         setPortfolio(result);
       }
+      
+      console.log('Portfolio updated successfully!');
       
       setNewHolding({ symbol: '', quantity: 0, avgPrice: 0 });
       setSearchQuery('');
@@ -215,6 +237,7 @@ export default function PortfolioPage() {
       setAlerts(alertsData);
     } catch (error) {
       console.error('Failed to add holding:', error);
+      alert('Failed to add stock. Please try again.');
     }
   };
 

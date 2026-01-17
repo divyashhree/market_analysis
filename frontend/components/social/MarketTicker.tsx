@@ -8,16 +8,13 @@ interface MarketTickerProps {
   className?: string;
 }
 
-const defaultData = [
-  { code: 'US', flag: '🇺🇸', name: 'S&P 500', change: 0.42, value: 5891.23 },
-  { code: 'IN', flag: '🇮🇳', name: 'NIFTY 50', change: -0.28, value: 24620.45 },
-  { code: 'GB', flag: '🇬🇧', name: 'FTSE 100', change: 0.15, value: 8234.12 },
-  { code: 'JP', flag: '🇯🇵', name: 'Nikkei 225', change: 1.23, value: 39456.78 },
-  { code: 'DE', flag: '🇩🇪', name: 'DAX', change: 0.67, value: 19234.56 },
-  { code: 'CN', flag: '🇨🇳', name: 'Shanghai', change: -0.45, value: 3287.34 },
-  { code: 'FR', flag: '🇫🇷', name: 'CAC 40', change: 0.33, value: 7645.23 },
-  { code: 'BR', flag: '🇧🇷', name: 'Bovespa', change: -1.12, value: 127543.21 },
-];
+interface TickerItem {
+  code: string;
+  flag: string;
+  name: string;
+  change: number;
+  value: number;
+}
 
 // Consistent number formatting to avoid hydration mismatch
 const formatNumber = (num: number | undefined): string => {
@@ -28,32 +25,89 @@ const formatNumber = (num: number | undefined): string => {
   }).format(num);
 };
 
+// Stock index info mapping
+const STOCK_INFO: Record<string, { flag: string; name: string }> = {
+  US: { flag: '🇺🇸', name: 'S&P 500' },
+  IN: { flag: '🇮🇳', name: 'NIFTY 50' },
+  GB: { flag: '🇬🇧', name: 'FTSE 100' },
+  JP: { flag: '🇯🇵', name: 'Nikkei 225' },
+  DE: { flag: '🇩🇪', name: 'DAX' },
+  CN: { flag: '🇨🇳', name: 'Shanghai' },
+  FR: { flag: '🇫🇷', name: 'CAC 40' },
+  BR: { flag: '🇧🇷', name: 'Bovespa' },
+};
+
 export default function MarketTicker({ className = '' }: MarketTickerProps) {
   const { connected, marketUpdates } = useWebSocket();
-  const [tickerData, setTickerData] = useState(defaultData);
+  const [tickerData, setTickerData] = useState<TickerItem[]>([]);
   const [isPaused, setIsPaused] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Ensure client-side only rendering to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Update with real-time data
+  // Fetch real stock data on mount
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const response = await api.getGlobalStocks();
+        if (response.success && response.data && Array.isArray(response.data)) {
+          const formattedData: TickerItem[] = response.data
+            .filter(item => STOCK_INFO[item.code])
+            .map(item => ({
+              code: item.code,
+              flag: STOCK_INFO[item.code]?.flag || '🌍',
+              name: item.indexName || STOCK_INFO[item.code]?.name || item.code,
+              change: item.latestChange || 0,
+              value: item.latestValue || 0,
+            }));
+          
+          if (formattedData.length > 0) {
+            setTickerData(formattedData);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch stock data:', error);
+        // Keep empty state - will show loading or use WebSocket updates
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStockData();
+  }, []);
+
+  // Update with real-time WebSocket data
   useEffect(() => {
     if (Object.keys(marketUpdates).length > 0) {
-      setTickerData(prev =>
-        prev.map(item => {
+      setTickerData(prev => {
+        if (prev.length === 0) {
+          // Create initial data from WebSocket updates
+          return Object.entries(marketUpdates).map(([code, update]) => ({
+            code,
+            flag: STOCK_INFO[code]?.flag || '🌍',
+            name: STOCK_INFO[code]?.name || code,
+            change: update.stockChange || 0,
+            value: update.value || 0,
+          }));
+        }
+        
+        // Update existing data with WebSocket values
+        return prev.map(item => {
           const update = marketUpdates[item.code];
           if (update) {
             return {
               ...item,
-              change: update.stockChange,
+              change: update.stockChange || item.change,
+              value: update.value || item.value,
             };
           }
           return item;
-        })
-      );
+        });
+      });
     }
   }, [marketUpdates]);
 
@@ -66,6 +120,40 @@ export default function MarketTicker({ className = '' }: MarketTickerProps) {
             <span className="w-2 h-2 rounded-full bg-gray-500" />
             <span className="text-xs text-gray-400 font-medium">LIVE</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while fetching data
+  if (loading && tickerData.length === 0) {
+    return (
+      <div className={`relative overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 h-10 ${className}`}>
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-900 to-transparent z-10 flex items-center pl-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+            <span className="text-xs text-gray-400 font-medium">LOADING</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-center h-full">
+          <span className="text-gray-400 text-sm">Fetching market data...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no data available
+  if (tickerData.length === 0) {
+    return (
+      <div className={`relative overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-2 h-10 ${className}`}>
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-900 to-transparent z-10 flex items-center pl-3">
+          <div className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-xs text-gray-400 font-medium">LIVE</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-center h-full">
+          <span className="text-gray-400 text-sm">Waiting for market data...</span>
         </div>
       </div>
     );

@@ -15,6 +15,40 @@ class DataService {
   }
 
   /**
+   * Add metadata about data freshness and source
+   */
+  addFreshnessMetadata(data, source, status = 'live') {
+    if (!data || data.length === 0) {
+      return {
+        data: [],
+        metadata: {
+          source: 'none',
+          status: 'error',
+          warning: 'No data available'
+        }
+      };
+    }
+
+    const latestDate = new Date(data[data.length - 1].date);
+    const daysSinceUpdate = Math.floor((Date.now() - latestDate) / (1000 * 60 * 60 * 24));
+    const isStale = daysSinceUpdate > 60; // Flag if data is older than 60 days
+    
+    return {
+      data,
+      metadata: {
+        source: source, // 'api' or 'csv'
+        status: status, // 'live', 'cached', 'stale'
+        lastUpdate: latestDate.toISOString(),
+        lastUpdateFormatted: latestDate.toLocaleDateString(),
+        daysSinceUpdate,
+        isStale,
+        warning: isStale ? `⚠️ Data is ${daysSinceUpdate} days old. Real-time API may be unavailable. For educational purposes only.` : null,
+        dataPoints: data.length
+      }
+    };
+  }
+
+  /**
    * Read CSV file and return parsed data
    */
   async readCSV(filename) {
@@ -61,15 +95,18 @@ class DataService {
           value: quotes.close[index] || quotes.open[index] || 0
         })).filter(item => item.value > 0);
 
-        cacheService.set(cacheKey, data);
-        return data;
+        const result_with_metadata = this.addFreshnessMetadata(data, 'api', 'live');
+        cacheService.set(cacheKey, result_with_metadata);
+        return result_with_metadata;
       }
     } catch (error) {
-      console.log('Yahoo Finance API failed, falling back to CSV');
+      console.warn('⚠️ Yahoo Finance API failed, falling back to CSV:', error.message);
     }
 
-    // Fallback to CSV
-    return await this.readCSV('nifty_data.csv');
+    // Fallback to CSV with warning
+    console.log('📁 Using fallback CSV data for NIFTY 50');
+    const csvData = await this.readCSV('nifty_data.csv');
+    return this.addFreshnessMetadata(csvData, 'csv', 'fallback');
   }
 
   /**
@@ -95,15 +132,18 @@ class DataService {
           value: quotes.close[index] || quotes.open[index] || 0
         })).filter(item => item.value > 0);
 
-        cacheService.set(cacheKey, data);
-        return data;
+        const result_with_metadata = this.addFreshnessMetadata(data, 'api', 'live');
+        cacheService.set(cacheKey, result_with_metadata);
+        return result_with_metadata;
       }
     } catch (error) {
-      console.log('Yahoo Finance API failed, falling back to CSV');
+      console.warn('⚠️ Yahoo Finance API failed, falling back to CSV:', error.message);
     }
 
-    // Fallback to CSV
-    return await this.readCSV('usdinr_data.csv');
+    // Fallback to CSV with warning
+    console.log('📁 Using fallback CSV data for USD-INR');
+    const csvData = await this.readCSV('usdinr_data.csv');
+    return this.addFreshnessMetadata(csvData, 'csv', 'fallback');
   }
 
   /**
@@ -116,7 +156,7 @@ class DataService {
 
     try {
       // Try World Bank API
-      const url = 'https://api.worldbank.org/v2/country/IND/indicator/FP.CPI.TOTL?format=json&date=2014:2024&per_page=200';
+      const url = 'https://api.worldbank.org/v2/country/IND/indicator/FP.CPI.TOTL?format=json&date=2014:2026&per_page=200';
       const response = await axios.get(url, { timeout: 10000 });
       
       if (response.data && Array.isArray(response.data) && response.data[1]) {
@@ -129,16 +169,19 @@ class DataService {
           .sort((a, b) => a.date.localeCompare(b.date));
 
         if (data.length > 0) {
-          cacheService.set(cacheKey, data);
-          return data;
+          const result_with_metadata = this.addFreshnessMetadata(data, 'api', 'live');
+          cacheService.set(cacheKey, result_with_metadata);
+          return result_with_metadata;
         }
       }
     } catch (error) {
-      console.log('World Bank API failed, falling back to CSV');
+      console.warn('⚠️ World Bank API failed, falling back to CSV:', error.message);
     }
 
-    // Fallback to CSV
-    return await this.readCSV('cpi_data.csv');
+    // Fallback to CSV with warning
+    console.log('📁 Using fallback CSV data for CPI');
+    const csvData = await this.readCSV('cpi_data.csv');
+    return this.addFreshnessMetadata(csvData, 'csv', 'fallback');
   }
 
   /**
@@ -149,16 +192,23 @@ class DataService {
     const cached = cacheService.get(cacheKey);
     if (cached) return cached;
 
-    const data = await Promise.all([
+    const [cpiResult, usdinrResult, niftyResult] = await Promise.all([
       this.fetchCPIData(),
       this.fetchUSDINRData(),
       this.fetchNiftyData(),
     ]);
     
     const combinedData = {
-      cpi: data[0],
-      usdinr: data[1],
-      nifty: data[2],
+      cpi: cpiResult.data || cpiResult,
+      usdinr: usdinrResult.data || usdinrResult,
+      nifty: niftyResult.data || niftyResult,
+      metadata: {
+        cpi: cpiResult.metadata,
+        usdinr: usdinrResult.metadata,
+        nifty: niftyResult.metadata,
+        hasStaleData: cpiResult.metadata?.isStale || usdinrResult.metadata?.isStale || niftyResult.metadata?.isStale,
+        hasFallbackData: cpiResult.metadata?.source === 'csv' || usdinrResult.metadata?.source === 'csv' || niftyResult.metadata?.source === 'csv'
+      }
     };
 
     cacheService.set(cacheKey, combinedData);

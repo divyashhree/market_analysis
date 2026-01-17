@@ -6,10 +6,10 @@ const sentimentService = require('../services/sentimentService');
  * @route GET /api/sentiment/news
  * @desc Get news feed with sentiment analysis
  */
-router.get('/news', (req, res) => {
+router.get('/news', async (req, res) => {
   try {
     const { category, limit } = req.query;
-    const news = sentimentService.getNewsFeed({ 
+    const news = await sentimentService.getNewsFeed({ 
       category, 
       limit: limit ? parseInt(limit) : 10 
     });
@@ -24,9 +24,9 @@ router.get('/news', (req, res) => {
  * @route GET /api/sentiment/market
  * @desc Get overall market sentiment
  */
-router.get('/market', (req, res) => {
+router.get('/market', async (req, res) => {
   try {
-    const sentiment = sentimentService.getMarketSentiment();
+    const sentiment = await sentimentService.getMarketSentiment();
     res.json(sentiment);
   } catch (error) {
     console.error('Get market sentiment error:', error);
@@ -38,10 +38,10 @@ router.get('/market', (req, res) => {
  * @route GET /api/sentiment/trend
  * @desc Get sentiment trend over time
  */
-router.get('/trend', (req, res) => {
+router.get('/trend', async (req, res) => {
   try {
     const { days } = req.query;
-    const trend = sentimentService.getSentimentTrend(days ? parseInt(days) : 7);
+    const trend = await sentimentService.getSentimentTrend(days ? parseInt(days) : 7);
     res.json(trend);
   } catch (error) {
     console.error('Get sentiment trend error:', error);
@@ -53,9 +53,9 @@ router.get('/trend', (req, res) => {
  * @route GET /api/sentiment/movers
  * @desc Get key market movers from news
  */
-router.get('/movers', (req, res) => {
+router.get('/movers', async (req, res) => {
   try {
-    const movers = sentimentService.getMarketMovers();
+    const movers = await sentimentService.getMarketMovers();
     res.json(movers);
   } catch (error) {
     console.error('Get movers error:', error);
@@ -67,9 +67,9 @@ router.get('/movers', (req, res) => {
  * @route GET /api/sentiment/alerts
  * @desc Get sentiment-based alerts
  */
-router.get('/alerts', (req, res) => {
+router.get('/alerts', async (req, res) => {
   try {
-    const alerts = sentimentService.getSentimentAlerts();
+    const alerts = await sentimentService.getSentimentAlerts();
     res.json(alerts);
   } catch (error) {
     console.error('Get alerts error:', error);
