@@ -1,6 +1,6 @@
-# 🌍 Global Market Analyzer
+# 🌍 Market Analysis Platform
 
-A comprehensive full-stack web application for analyzing and comparing economic indicators across **30+ countries worldwide**. This educational research tool visualizes and compares inflation rates, stock market indices, GDP growth, and currency exchange rates using official data from the World Bank and major financial exchanges.
+A comprehensive full-stack web application for analyzing economic indicators, stock markets, and financial trends across **30+ countries worldwide**. This educational platform combines data visualization, portfolio management, market simulation, sentiment analysis, and AI-powered insights.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
@@ -9,14 +9,16 @@ A comprehensive full-stack web application for analyzing and comparing economic 
 
 ## 🎯 Project Purpose
 
-This tool is designed for **educational and research purposes only** to help understand:
+This platform is designed for **educational and research purposes** to help students and researchers:
+- 📊 Analyze relationships between inflation, stock markets, and currencies
 - 🌍 Compare economic indicators across 30+ countries
-- 📊 Relationships between inflation, stock markets, and currencies globally
-- 📈 How different economies respond to global events
-- 🔗 Correlations between major stock indices worldwide
-- 📉 Currency strength and exchange rate trends
+- 💼 Manage and track investment portfolios
+- 🎮 Simulate market scenarios and "what-if" analysis
+- 📰 Monitor market sentiment from news sources
+- 🤖 Get AI-powered insights and educational content
+- 📈 Understand how different economies respond to global events
 
-**⚠️ IMPORTANT DISCLAIMER:** This tool is NOT intended for trading, investment advice, or financial decisions. Past trends do not predict future performance.
+**⚠️ IMPORTANT DISCLAIMER:** This tool is for educational purposes only and is NOT intended for actual trading, investment advice, or financial decisions.
 
 ## 🌐 Supported Countries (30+)
 
@@ -38,77 +40,110 @@ This tool is designed for **educational and research purposes only** to help und
 ### Africa
 🇿🇦 South Africa (JSE) • 🇳🇬 Nigeria (NSE) • 🇪🇬 Egypt (EGX 30)
 
-## ✨ Features
+## ✨ Core Features
 
-### 🌍 NEW: Global Comparison
-- **Multi-Country Charts** - Compare up to 10 countries on the same chart
-- **Global Inflation Rankings** - See inflation rates across all countries
-- **Stock Market Performance** - Compare YTD and 1-year returns
-- **Currency Strength** - Track currency changes vs USD
-- **Regional Analysis** - Compare economies by region
-- **Country Detail Pages** - Deep dive into individual country data
+### 📊 Data Visualization & Analysis
+- **Interactive Charts** - Real-time line charts, scatter plots, heatmaps, and histograms
+- **Multi-Country Comparison** - Compare up to 10 countries simultaneously
+- **Correlation Analysis** - Pearson correlation coefficients with visual heatmaps
+- **Rolling Correlations** - Track how relationships change over time
+- **Moving Averages** - 3, 6, and 12-month technical indicators
+- **Statistical Analysis** - Mean, median, standard deviation, volatility metrics
+- **Dual-Axis Charts** - Compare different metrics on the same timeline
 
-### 📊 Data Visualization
-- **Interactive Line Charts** - Individual charts for CPI, USD-INR, and NIFTY 50
-- **Multi-Country Overlay Charts** - Compare multiple countries on one chart
-- **Dual-Axis Overlay Charts** - Compare any two variables on the same chart
-- **Correlation Scatter Plots** - Visualize relationships between variables
-- **Correlation Heatmap** - 3x3 matrix showing all correlations
-- **Distribution Histograms** - Compare returns in high vs low inflation periods
-- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+### 🌍 Global Market Intelligence
+- **30+ Countries** - Comprehensive data from major economies worldwide
+- **Interactive World Map** - Click countries to view detailed economic data
+- **Global Rankings** - Sort by inflation, stock performance, currency strength
+- **Regional Comparison** - Analyze trends by continent and economic bloc
+- **Country Deep-Dive** - Individual pages with complete economic profiles
 
-### 🔍 Advanced Analytics
-- **Pearson Correlation Coefficients** - Measure linear relationships
-- **Moving Averages** - 3, 6, and 12-month windows
-- **Rolling Correlations** - 12-month rolling window analysis
-- **Statistical Measures** - Mean, standard deviation, min, max, median
-- **Period Comparison** - Compare statistics across different time ranges
-- **Volatility Analysis** - Coefficient of variation and trend analysis
+### 💼 Portfolio Management
+- **Portfolio Builder** - Create and track custom stock portfolios
+- **Real-time Valuation** - Monitor portfolio value and performance
+- **Sector Allocation** - Visualize diversification across industries
+- **Risk Analysis** - Assess macro sensitivities (inflation, interest rates, oil)
+- **Performance Metrics** - Track returns, volatility, and Sharpe ratio
+- **Custom Alerts** - Get notified about significant market moves
 
-### 💡 Auto-Generated Insights
-- Strong correlation identification
-- Trend reversal detection
-- Volatility spike analysis
-- Period-specific observations
-- Color-coded insight cards (positive/negative/neutral)
+### 🎮 Market Simulator
+- **Scenario Analysis** - Test "what-if" market conditions
+- **Inflation Impact** - Simulate effects of CPI changes on assets
+- **Interest Rate Scenarios** - Model RBI/Fed policy changes
+- **Economic Shocks** - Test portfolio resilience to events
+- **Backtesting** - Apply historical scenarios to current holdings
+- **Confidence Intervals** - Statistical prediction ranges
 
-### 🎨 UI/UX Features
-- Dark mode support
-- Date range filtering
-- Data export to CSV
-- Interactive data tables with sorting and pagination
-- Loading skeletons
-- Error handling and retry mechanisms
-- Sticky navigation
-- Mobile-first responsive design
+### 📰 Sentiment & Social Intelligence
+- **Live News Feed** - Real-time financial news from major sources
+- **Sentiment Analysis** - AI-powered positive/negative/neutral classification
+- **Market Ticker** - Live price updates for major indices
+- **Social Feed** - Community insights and market discussions
+- **Activity Feed** - Track what other users are analyzing
+- **Leaderboard** - Top performers and contributors
+
+### 🤖 AI-Powered Features
+- **ChatBot Assistant** - Ask questions about economics and markets
+- **Auto-Generated Insights** - AI identifies trends and correlations
+- **Smart Recommendations** - Personalized learning paths
+- **Economic Explainers** - Context-aware educational content
+- **Data Interpretation** - Plain-language explanations of complex metrics
+
+### 🎓 Educational Hub
+- **Interactive Tutorials** - Learn about inflation, markets, and currencies
+- **Quizzes & Tests** - Validate understanding with interactive assessments
+- **Concept Library** - Comprehensive glossary of financial terms
+- **Case Studies** - Real-world examples and historical events
+- **Progress Tracking** - Monitor learning journey
+
+### 🔍 Stock Analysis Tools
+- **Stock Search** - Find and analyze individual companies
+- **Technical Indicators** - Moving averages, RSI, MACD
+- **Fundamental Data** - P/E ratios, market cap, dividend yield
+- **Historical Charts** - Detailed price history with events
+- **Peer Comparison** - Compare stocks within same sector
+
+### 🎨 User Experience
+- **Dark/Light Mode** - Comfortable viewing in any environment
+- **Responsive Design** - Seamless on desktop, tablet, and mobile
+- **Data Export** - Download charts and data as CSV/PNG
+- **Interactive Tables** - Sort, filter, and paginate large datasets
+- **Real-time Updates** - WebSocket support for live data
+- **Offline Mode** - CSV fallback when APIs are unavailable
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 14 (App Router with React Server Components)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **Charts:** Recharts
+- **Charts:** Recharts (declarative charting library)
 - **HTTP Client:** Axios
+- **Real-time:** WebSocket support
 - **Date Handling:** date-fns
+- **State Management:** React Hooks
+- **UI Components:** Custom component library
 
 ### Backend
-- **Runtime:** Node.js
+- **Runtime:** Node.js 18+
 - **Framework:** Express.js
+- **WebSockets:** ws (for real-time updates)
 - **Data Fetching:** Axios
 - **CSV Parsing:** csv-parser
-- **Caching:** node-cache
+- **Caching:** node-cache (in-memory caching)
 - **Environment:** dotenv
+- **CORS:** cors middleware
 
-### Data Sources (All Free, No API Keys Required!)
-- **World Bank API** - Inflation, CPI, GDP data for 30+ countries
-- **Yahoo Finance** - Stock indices and exchange rates for all major markets
-- **Alpha Vantage** - Backup source (free tier: 500 calls/day)
-- **CSV Fallback** - Local CSV files for offline operation
+### Data Sources (No API Keys Required for Basic Features!)
+- **World Bank API** - Inflation, CPI, GDP data (free, public API)
+- **Yahoo Finance** - Stock indices and exchange rates (free scraping)
+- **Alpha Vantage** - Alternative stock data source (free tier: 500 calls/day)
+- **News RSS Feeds** - Financial news from Economic Times, Moneycontrol
+- **CSV Fallback** - Local CSV files for offline operation and reliability
 
 ## 🔌 API Endpoints
 
-### Country Data (NEW!)
+### Country Data
 | Endpoint | Description |
 |----------|-------------|
 | `GET /api/countries` | List all 30+ supported countries |
@@ -130,76 +165,198 @@ This tool is designed for **educational and research purposes only** to help und
 | `GET /api/data/cpi` | CPI data only |
 | `GET /api/data/usdinr` | USD-INR exchange rate |
 | `GET /api/data/nifty` | NIFTY 50 index |
-| `GET /api/analysis/correlations` | Correlation matrix |
-| `GET /api/analysis/insights` | Auto-generated insights |
+| `GET /api/data/range?start=YYYY-MM-DD&end=YYYY-MM-DD` | Filter by date range |
+
+### Analysis & Correlation
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/analysis/correlations` | Pearson correlation matrix |
+| `GET /api/analysis/insights` | Auto-generated market insights |
+| `GET /api/analysis/full` | Complete analysis with all metrics |
+| `GET /api/analysis/compare?period1Start=...&period1End=...` | Compare time periods |
+
+### Portfolio Management
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/portfolio` | Get all saved portfolios |
+| `POST /api/portfolio` | Create new portfolio |
+| `PUT /api/portfolio/:id` | Update portfolio |
+| `DELETE /api/portfolio/:id` | Delete portfolio |
+| `GET /api/portfolio/:id/analysis` | Get portfolio risk analysis |
+| `GET /api/portfolio/:id/performance` | Get performance metrics |
+
+### Market Simulator
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/simulator/scenario` | Run market simulation |
+| `POST /api/simulator/inflation` | Simulate inflation impact |
+| `POST /api/simulator/interest-rate` | Simulate rate changes |
+| `POST /api/simulator/backtest` | Backtest historical scenarios |
+
+### Sentiment & News
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/sentiment/news` | Get latest financial news |
+| `GET /api/sentiment/analyze` | Analyze news sentiment |
+| `GET /api/sentiment/trends` | Get sentiment trends |
+| `GET /api/sentiment/alerts` | Get market alerts |
+
+### Stock Data
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/stocks/search?query=RELIANCE` | Search for stocks |
+| `GET /api/stocks/:symbol` | Get stock details |
+| `GET /api/stocks/:symbol/history` | Get historical data |
+| `GET /api/stocks/:symbol/indicators` | Get technical indicators |
+| `GET /api/stocks/trending` | Get trending stocks |
+
+### Social Features
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/social/feed` | Get activity feed |
+| `GET /api/social/insights` | Get user-shared insights |
+| `POST /api/social/comment` | Post a comment |
+| `GET /api/social/leaderboard` | Get top contributors |
+
+### Educational Content
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/education/tutorials` | Get all tutorials |
+| `GET /api/education/tutorial/:id` | Get specific tutorial |
+| `GET /api/education/quizzes` | Get all quizzes |
+| `POST /api/education/quiz/:id/submit` | Submit quiz answers |
+| `GET /api/education/progress` | Get learning progress |
+
+### AI Chat
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/chat/message` | Send message to AI assistant |
+| `GET /api/chat/history` | Get chat history |
+| `DELETE /api/chat/history` | Clear chat history |
 
 ## 📁 Project Structure
 
 ```
-macro-market-analyzer/
-├── frontend/
+market_analysis/
+├── frontend/                        # Next.js 14 TypeScript Frontend
 │   ├── app/
-│   │   ├── page.tsx                 # Landing page
-│   │   ├── global/page.tsx          # 🆕 Global comparison
-│   │   ├── country/[code]/page.tsx  # 🆕 Country details
-│   │   ├── dashboard/page.tsx       # India dashboard
-│   │   ├── analysis/page.tsx        # Correlation analysis
-│   │   ├── insights/page.tsx        # Auto-generated insights
-│   │   ├── about/page.tsx           # Methodology & info
-│   │   ├── layout.tsx               # Root layout
-│   │   └── globals.css              # Global styles
+│   │   ├── page.tsx                # Landing page
+│   │   ├── global/page.tsx         # Global market comparison
+│   │   ├── country/[code]/page.tsx # Country-specific details
+│   │   ├── dashboard/page.tsx      # India economic dashboard
+│   │   ├── analysis/page.tsx       # Correlation & statistical analysis
+│   │   ├── compare/page.tsx        # Period comparison tool
+│   │   ├── insights/page.tsx       # AI-generated insights
+│   │   ├── portfolio/page.tsx      # Portfolio management
+│   │   ├── simulator/page.tsx      # Market scenario simulator
+│   │   ├── sentiment/page.tsx      # News & sentiment analysis
+│   │   ├── learn/page.tsx          # Educational hub
+│   │   ├── dynamics/page.tsx       # Market dynamics visualization
+│   │   ├── about/page.tsx          # About & methodology
+│   │   ├── layout.tsx              # Root layout with nav
+│   │   └── globals.css             # Global styles
 │   ├── components/
-│   │   ├── charts/                  # Recharts components
+│   │   ├── charts/                 # Recharts visualizations
 │   │   │   ├── LineChartComponent.tsx
-│   │   │   ├── MultiCountryChart.tsx # 🆕 Multi-country comparison
+│   │   │   ├── LineChartWithMA.tsx
+│   │   │   ├── LineChartWithEvents.tsx
+│   │   │   ├── MultiCountryChart.tsx
 │   │   │   ├── DualAxisChart.tsx
 │   │   │   ├── ScatterPlot.tsx
 │   │   │   ├── CorrelationHeatmap.tsx
+│   │   │   ├── PercentageChangeHeatmap.tsx
+│   │   │   ├── RollingCorrelationChart.tsx
 │   │   │   └── Histogram.tsx
-│   │   ├── country/                 # 🆕 Country components
+│   │   ├── country/                # Global market components
 │   │   │   ├── CountrySelector.tsx
-│   │   │   └── GlobalRankingTable.tsx
-│   │   ├── ui/                      # Reusable UI components
+│   │   │   ├── GlobalRankingTable.tsx
+│   │   │   └── InteractiveWorldMap.tsx
+│   │   ├── chat/
+│   │   │   └── ChatBot.tsx         # AI assistant
+│   │   ├── stocks/
+│   │   │   ├── StockSearchBar.tsx
+│   │   │   └── StockDetails.tsx
+│   │   ├── social/
+│   │   │   ├── ActivityFeed.tsx
+│   │   │   ├── InsightsFeed.tsx
+│   │   │   ├── Comments.tsx
+│   │   │   ├── Leaderboard.tsx
+│   │   │   ├── MarketTicker.tsx
+│   │   │   └── MarketAlerts.tsx
+│   │   ├── interactive/
+│   │   │   ├── AnimatedGlobeLoader.tsx
+│   │   │   ├── AnimatedNumber.tsx
+│   │   │   └── ...
+│   │   ├── ui/                     # Reusable UI components
 │   │   │   ├── Card.tsx
+│   │   │   ├── Badge.tsx
 │   │   │   ├── DataTable.tsx
 │   │   │   └── LoadingSkeleton.tsx
-│   │   └── layout/                  # Layout components
+│   │   └── layout/
 │   │       ├── Navbar.tsx
 │   │       ├── Footer.tsx
 │   │       └── ThemeProvider.tsx
 │   ├── lib/
-│   │   ├── api.ts                   # API client (expanded!)
-│   │   ├── types.ts                 # TypeScript types (expanded!)
-│   │   └── utils.ts                 # Utility functions
+│   │   ├── api.ts                  # API client functions
+│   │   ├── types.ts                # TypeScript type definitions
+│   │   ├── utils.ts                # Utility functions
+│   │   ├── useWebSocket.ts         # WebSocket hook
+│   │   └── economicEvents.ts       # Historical events data
+│   ├── hooks/
+│   │   └── useDebounce.ts          # Debounce hook
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── tailwind.config.ts
-│   └── next.config.js
-├── backend/
+│   ├── next.config.js
+│   └── vercel.json
+├── backend/                         # Express.js Backend
 │   ├── src/
 │   │   ├── config/
-│   │   │   └── countries.js         # 🆕 30+ country configs
+│   │   │   ├── countries.js        # 30+ country configurations
+│   │   │   └── stocks.js           # Stock symbols & data
 │   │   ├── controllers/
-│   │   │   ├── dataController.js
+│   │   │   ├── dataController.js   # Data endpoint handlers
 │   │   │   └── analysisController.js
 │   │   ├── services/
-│   │   │   ├── dataService.js       # India data fetching
-│   │   │   ├── countryDataService.js # 🆕 Multi-country data
-│   │   │   ├── analysisService.js   # Statistical analysis
-│   │   │   └── cacheService.js      # Caching logic
+│   │   │   ├── dataService.js      # India data fetching
+│   │   │   ├── countryDataService.js # Multi-country data
+│   │   │   ├── analysisService.js  # Statistical calculations
+│   │   │   ├── portfolioService.js # Portfolio management
+│   │   │   ├── simulatorService.js # Market simulation
+│   │   │   ├── sentimentService.js # News sentiment analysis
+│   │   │   ├── socialService.js    # Social features
+│   │   │   ├── educationService.js # Learning content
+│   │   │   ├── chatService.js      # AI chat integration
+│   │   │   ├── websocketService.js # Real-time updates
+│   │   │   └── cacheService.js     # Caching layer
 │   │   ├── routes/
 │   │   │   ├── dataRoutes.js
-│   │   │   ├── countryRoutes.js     # 🆕 Country endpoints
-│   │   │   └── analysisRoutes.js
-│   │   ├── data/                    # CSV data files
+│   │   │   ├── countryRoutes.js
+│   │   │   ├── analysisRoutes.js
+│   │   │   ├── portfolioRoutes.js
+│   │   │   ├── simulatorRoutes.js
+│   │   │   ├── sentimentRoutes.js
+│   │   │   ├── socialRoutes.js
+│   │   │   ├── stockRoutes.js
+│   │   │   ├── educationRoutes.js
+│   │   │   └── chatRoutes.js
+│   │   ├── data/                   # CSV data files
 │   │   │   ├── cpi_data.csv
 │   │   │   ├── usdinr_data.csv
-│   │   │   └── nifty_data.csv
-│   │   ├── app.js                   # Express app setup
-│   │   └── server.js                # Server entry point
+│   │   │   ├── nifty_data.csv
+│   │   │   └── data_metadata.json
+│   │   ├── scripts/
+│   │   │   ├── update_csv_data.js  # Data update script
+│   │   │   └── README.md
+│   │   ├── app.js                  # Express app setup
+│   │   └── server.js               # Server entry point
 │   ├── package.json
-│   └── .env.example
-├── README.md
+│   └── .env
+├── README.md                        # This file
+├── QUICKSTART.md                    # Quick start guide
+├── API_DOCUMENTATION.md             # Detailed API docs
+├── DEPLOYMENT.md                    # Deployment instructions
+├── LICENSE
 └── .gitignore
 ```
 
@@ -333,9 +490,10 @@ GET /api/analysis/compare?period1Start=2014-01-01&period1End=2019-12-31&period2S
 ## 📊 Data Methodology
 
 ### Data Collection
-- **Time Period:** January 2014 - December 2024 (10 years)
-- **Frequency:** Monthly data points
-- **Sources:** Yahoo Finance, World Bank API, CSV fallback
+- **Time Period:** January 2014 - December 2026 (12+ years)
+- **Frequency:** Monthly data points (end-of-month values)
+- **Sources:** World Bank API, Yahoo Finance, CSV fallback files
+- **Update Frequency:** Daily API checks with 1-hour cache
 
 ### Statistical Methods
 
@@ -345,14 +503,34 @@ r = Σ((x - x̄)(y - ȳ)) / √(Σ(x - x̄)² × Σ(y - ȳ)²)
 ```
 Measures linear relationship between -1 (perfect negative) and +1 (perfect positive).
 
-**Moving Average:**
+**Moving Average (Simple):**
 ```
 MA(n) = (x₁ + x₂ + ... + xₙ) / n
 ```
-Smooths data using 3, 6, and 12-month windows.
+Smooths data using 3, 6, and 12-month windows for trend identification.
+
+**Rolling Correlation:**
+Calculates correlation over a moving window to track changing relationships.
 
 **Standard Deviation & Volatility:**
-Used to measure market volatility and data dispersion.
+```
+σ = √(Σ(x - μ)² / N)
+CV = (σ / μ) × 100%
+```
+Measures market volatility and risk metrics.
+
+**Portfolio Risk Analysis:**
+- **Beta:** Market sensitivity coefficient
+- **Sharpe Ratio:** Risk-adjusted return measure
+- **Value at Risk (VaR):** Potential loss estimation
+- **Sector Allocation:** Diversification metrics
+
+### Data Quality & Validation
+- Automatic outlier detection
+- Missing data interpolation
+- Data freshness warnings
+- Metadata tracking with timestamps
+- Graceful API failure handling with CSV fallback
 
 ## 🎨 Customization
 
@@ -449,8 +627,8 @@ For questions or issues:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** December 2024  
-**Status:** ✅ Production Ready
+**Version:** 2.0.0  
+**Last Updated:** January 2026  
+**Status:** ✅ Production Ready with Advanced Features
 
-Built with ❤️ for education and research
+Built with ❤️ for education and financial literacy
